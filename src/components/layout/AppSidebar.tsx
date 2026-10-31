@@ -1,7 +1,6 @@
 import { useRef, useState } from "react"
 import type { MouseEvent } from "react"
 import {
-  Activity,
   BarChart3,
   CalendarClock,
   LayoutDashboard,
@@ -22,7 +21,6 @@ const navigation = [
   { label: "Overview", href: "#overview", icon: LayoutDashboard },
   { label: "My Purchases", href: "#purchases", icon: Package },
   { label: "Deadlines", href: "#deadlines", icon: CalendarClock },
-  { label: "Activity", href: "#activity", icon: Activity },
 ]
 
 function Brand() {
