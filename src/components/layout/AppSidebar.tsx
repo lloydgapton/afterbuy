@@ -2,13 +2,9 @@ import { useState } from "react"
 import {
   Activity,
   BarChart3,
-  ChevronDown,
-  CircleHelp,
+  CalendarClock,
   LayoutDashboard,
   Package,
-  RotateCcw,
-  Settings,
-  ShieldCheck,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,11 +16,10 @@ import {
 import { cn } from "cn"
 
 const navigation = [
-  { label: "Overview", icon: LayoutDashboard },
-  { label: "My Purchases", icon: Package },
-  { label: "Return Windows", icon: RotateCcw },
-  { label: "Warranties", icon: ShieldCheck },
-  { label: "Activity", icon: Activity },
+  { label: "Overview", href: "#overview", icon: LayoutDashboard },
+  { label: "My Purchases", href: "#purchases", icon: Package },
+  { label: "Deadlines", href: "#deadlines", icon: CalendarClock },
+  { label: "Activity", href: "#activity", icon: Activity },
 ]
 
 function Brand() {
@@ -48,16 +43,16 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
       <p className="mb-4 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
         Workspace
       </p>
-      {navigation.map(({ label, icon: Icon }) => (
-        <button
+      {navigation.map(({ label, href, icon: Icon }) => (
+        <a
           key={label}
-          type="button"
+          href={href}
           onClick={() => {
             setActive(label)
             onNavigate?.()
           }}
           className={cn(
-            "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium transition-colors",
+            "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E9B35B] focus-visible:ring-offset-2 focus-visible:ring-offset-[#193C32]",
             active === label
               ? "bg-white/10 text-white"
               : "text-white/55 hover:bg-white/6 hover:text-white",
@@ -65,34 +60,21 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
         >
           <Icon className={cn("size-[17px]", active === label && "text-[#E9B35B]")} />
           {label}
-        </button>
+        </a>
       ))}
     </nav>
   )
 }
 
-function SidebarContent() {
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col px-5 py-6">
       <Brand />
       <div className="mt-12">
-        <Navigation />
+        <Navigation onNavigate={onNavigate} />
       </div>
-      <div className="mt-auto space-y-2">
-        <button type="button" className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-white/55 hover:bg-white/6 hover:text-white">
-          <CircleHelp className="size-[17px]" /> Help centre
-        </button>
-        <button type="button" className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-white/55 hover:bg-white/6 hover:text-white">
-          <Settings className="size-[17px]" /> Settings
-        </button>
-        <div className="mt-5 flex items-center gap-3 border-t border-white/10 pt-5">
-          <div className="flex size-9 items-center justify-center rounded-full bg-[#D7E6D9] text-xs font-bold text-[#285D4B]">AM</div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px] font-medium text-white">Alex Morgan</p>
-            <p className="truncate text-[11px] text-white/40">Personal account</p>
-          </div>
-          <ChevronDown className="size-4 text-white/35" />
-        </div>
+      <div className="mt-auto border-t border-white/10 px-3 pt-5">
+        <p className="text-[11px] font-medium text-white/40">Local workspace</p>
       </div>
     </div>
   )
@@ -107,8 +89,10 @@ export function AppSidebar() {
 }
 
 export function MobileSidebar() {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="text-[#193C32] lg:hidden" aria-label="Open navigation">
           <LayoutDashboard className="size-5" />
@@ -116,7 +100,7 @@ export function MobileSidebar() {
       </SheetTrigger>
       <SheetContent side="left" className="w-[270px] border-none bg-[#193C32] p-0 text-white">
         <SheetTitle className="sr-only">Navigation</SheetTitle>
-        <SidebarContent />
+        <SidebarContent onNavigate={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   )

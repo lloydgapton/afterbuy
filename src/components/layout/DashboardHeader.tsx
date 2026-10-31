@@ -1,4 +1,4 @@
-import { Bell, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { MobileSidebar } from "@/components/layout/AppSidebar"
@@ -16,14 +16,9 @@ export function DashboardHeader({ onAddPurchase }: { onAddPurchase: () => void }
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" className="relative text-[#60716A]" aria-label="View notifications">
-          <Bell className="size-[18px]" />
-          <span className="absolute right-2 top-2 size-1.5 rounded-full bg-[#D96C55]" />
-        </Button>
         <Button onClick={onAddPurchase} className="hidden rounded-xl bg-[#285D4B] px-4 text-xs text-white shadow-none hover:bg-[#193C32] sm:inline-flex">
           <Plus className="size-4" /> Add purchase
         </Button>
-        <div className="flex size-8 items-center justify-center rounded-full bg-[#D7E6D9] text-[10px] font-bold text-[#285D4B] sm:hidden">AM</div>
       </div>
     </header>
   )
