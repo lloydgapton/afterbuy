@@ -1,7 +1,7 @@
-import { format, parseISO } from "date-fns"
+import { compareDesc, format, parseISO } from "date-fns"
 import { CalendarPlus, RotateCcw, ShieldCheck } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { mockActivity } from "@/data/mockPurchases"
+import type { ActivityItem } from "@/types/purchase"
 
 const activityIcons = {
   purchase: CalendarPlus,
@@ -15,7 +15,11 @@ const activityColors = {
   warranty: "bg-overdue/10 text-overdue",
 }
 
-export function ActivityFeed() {
+export function ActivityFeed({ activities }: { activities: ActivityItem[] }) {
+  const recentActivities = [...activities]
+    .sort((first, second) => compareDesc(parseISO(first.date), parseISO(second.date)))
+    .slice(0, 4)
+
   return (
     <Card className="rounded-2xl bg-card shadow-none ring-1 ring-border">
       <CardHeader className="px-5 pb-1 sm:px-6">
@@ -23,8 +27,14 @@ export function ActivityFeed() {
         <p className="mt-1 text-xs text-muted-foreground">Your latest updates</p>
       </CardHeader>
       <CardContent className="px-5 pt-4 sm:px-6">
-        <div className="space-y-4">
-          {mockActivity.slice(0, 4).map((activity) => {
+        {recentActivities.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border bg-background px-4 py-8 text-center">
+            <CalendarPlus className="mx-auto size-6 text-success" />
+            <p className="mt-2 text-sm font-semibold text-foreground">No activity yet</p>
+            <p className="mt-1 text-xs text-muted-foreground">Your purchase updates will appear here.</p>
+          </div>
+        ) : <div className="space-y-4">
+          {recentActivities.map((activity) => {
             const Icon = activityIcons[activity.kind]
             return (
               <div key={activity.id} className="flex gap-3">
@@ -37,7 +47,7 @@ export function ActivityFeed() {
               </div>
             )
           })}
-        </div>
+        </div>}
       </CardContent>
     </Card>
   )

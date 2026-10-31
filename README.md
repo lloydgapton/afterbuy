@@ -6,7 +6,7 @@ AfterBuy is a purchase tracking application designed to help users organise thei
 
 The project is being developed as a responsive, user-friendly frontend application using React and TypeScript.
 
-> **Project status:** In development. The initial dashboard interface is established, including dynamic purchase statistics and automatic return-window and warranty deadline calculations. Purchase management, activity management and data persistence are being implemented progressively.
+> **Project status:** In development. The dashboard supports purchase management, dynamic statistics, automatic deadline calculations, browser localStorage persistence and activity history. Backend synchronisation and other cross-device features are not implemented.
 
 ## The Problem
 
@@ -24,7 +24,7 @@ AfterBuy aims to solve this by providing a centralised place to record purchases
 - **Purchase Status Management:** Track the status of individual purchases.
 - **Activity History:** Keep a record of purchase-related updates.
 - **Dashboard Overview:** Display purchase statistics and important reminders.
-- **Local Data Persistence:** Preserve purchase information between browser sessions.
+- **Local Data Persistence:** Preserve purchase and activity information between browser sessions using browser localStorage.
 - **Responsive Interface:** Provide a consistent experience across desktop, tablet and mobile devices.
 
 ## Technology Stack
@@ -138,8 +138,10 @@ The initial development milestone includes:
 - Purchase creation and editing through a shared validated form.
 - Purchase detail viewing and deletion with confirmation.
 - Purchase form validation for required fields, positive values, valid statuses and non-future purchase dates.
+- Browser localStorage persistence for purchases and activity history using versioned storage keys.
+- Activity records for purchase creation, updates, status transitions and deletion.
 
-Persistent storage, reminder delivery and backend purchase synchronisation are still pending.
+Persistent storage is local to the current browser and device. Backend synchronisation, reminder delivery and cross-device access are still pending.
 
 ## Future Improvements
 

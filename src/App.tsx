@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Plus, Package, RotateCcw, ShieldCheck, Undo2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -10,18 +10,46 @@ import { NeedsAttention } from "@/components/dashboard/NeedsAttention"
 import { RecentPurchases } from "@/components/dashboard/RecentPurchases"
 import { StatCard } from "@/components/dashboard/StatCard"
 import { mockPurchases } from "@/data/mockPurchases"
+import { mockActivity } from "@/data/mockPurchases"
 import { getPurchaseMetrics } from "@/lib/purchaseMetrics"
+import { ACTIVITIES_STORAGE_KEY, loadFromStorage, PURCHASES_STORAGE_KEY, saveToStorage } from "@/lib/storage"
 import { PurchaseDialog } from "@/components/purchases/PurchaseDialog"
 import { PurchaseDetails } from "@/components/purchases/PurchaseDetails"
 import type { PurchaseFormValues } from "@/lib/purchaseSchema"
-import type { Purchase } from "@/types/purchase"
+import type { ActivityItem, Purchase } from "@/types/purchase"
+
+function createActivity(purchase: Purchase, title: string, kind: ActivityItem["kind"]): ActivityItem {
+  return {
+    id: crypto.randomUUID(),
+    title,
+    description: `${purchase.product} - ${purchase.retailer}`,
+    date: new Date().toISOString(),
+    kind,
+  }
+}
+
+const statusActivity = {
+  considering: { title: "Purchase marked as considering", kind: "purchase" },
+  kept: { title: "Purchase marked as kept", kind: "purchase" },
+  returned: { title: "Purchase returned", kind: "return" },
+  claim_open: { title: "Warranty claim initiated", kind: "warranty" },
+} satisfies Record<Purchase["status"], { title: string; kind: ActivityItem["kind"] }>
 
 function App() {
-  const [purchases, setPurchases] = useState<Purchase[]>(mockPurchases)
+  const [purchases, setPurchases] = useState<Purchase[]>(() => loadFromStorage(PURCHASES_STORAGE_KEY, mockPurchases))
+  const [activities, setActivities] = useState<ActivityItem[]>(() => loadFromStorage(ACTIVITIES_STORAGE_KEY, mockActivity))
   const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false)
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
   const [detailsPurchase, setDetailsPurchase] = useState<Purchase | null>(null)
   const metrics = getPurchaseMetrics(purchases)
+
+  useEffect(() => {
+    saveToStorage(PURCHASES_STORAGE_KEY, purchases)
+  }, [purchases])
+
+  useEffect(() => {
+    saveToStorage(ACTIVITIES_STORAGE_KEY, activities)
+  }, [activities])
 
   function openCreateDialog() {
     setEditingPurchase(null)
@@ -36,10 +64,17 @@ function App() {
 
   function handlePurchaseSubmit(values: PurchaseFormValues) {
     if (editingPurchase) {
-      setPurchases((currentPurchases) => currentPurchases.map((purchase) => purchase.id === editingPurchase.id ? { ...purchase, ...values } : purchase))
+      const updatedPurchase = { ...editingPurchase, ...values }
+      setPurchases((currentPurchases) => currentPurchases.map((purchase) => purchase.id === editingPurchase.id ? updatedPurchase : purchase))
+      const activity = editingPurchase.status === updatedPurchase.status
+        ? createActivity(updatedPurchase, "Purchase updated", "purchase")
+        : createActivity(updatedPurchase, statusActivity[updatedPurchase.status].title, statusActivity[updatedPurchase.status].kind)
+      setActivities((currentActivities) => [activity, ...currentActivities])
       toast.success("Purchase successfully updated")
     } else {
-      setPurchases((currentPurchases) => [...currentPurchases, { ...values, id: crypto.randomUUID(), accent: "sage" }])
+      const newPurchase: Purchase = { ...values, id: crypto.randomUUID(), accent: "sage" }
+      setPurchases((currentPurchases) => [...currentPurchases, newPurchase])
+      setActivities((currentActivities) => [createActivity(newPurchase, "Purchase added", "purchase"), ...currentActivities])
       toast.success("Purchase successfully added")
     }
     setPurchaseDialogOpen(false)
@@ -48,6 +83,7 @@ function App() {
 
   function handleDeletePurchase(purchase: Purchase) {
     setPurchases((currentPurchases) => currentPurchases.filter((item) => item.id !== purchase.id))
+    setActivities((currentActivities) => [createActivity(purchase, "Purchase deleted", "purchase"), ...currentActivities])
     setDetailsPurchase(null)
     toast.success("Purchase successfully deleted")
   }
@@ -77,7 +113,7 @@ function App() {
 
           <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.42fr)_minmax(300px,0.78fr)]">
             <NeedsAttention purchases={purchases} />
-            <ActivityFeed />
+            <ActivityFeed activities={activities} />
           </section>
 
           <section className="mt-6">
