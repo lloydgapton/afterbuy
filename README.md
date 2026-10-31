@@ -135,8 +135,11 @@ The initial development milestone includes:
 - Sample purchase and activity records.
 - Dynamic dashboard statistics derived from purchase records.
 - Automatic return-window and warranty deadline calculations using local calendar dates.
+- Purchase creation and editing through a shared validated form.
+- Purchase detail viewing and deletion with confirmation.
+- Purchase form validation for required fields, positive values, valid statuses and non-future purchase dates.
 
-The purchase-management workflows, reminder delivery and persistent storage are still under development.
+Persistent storage, reminder delivery and backend purchase synchronisation are still pending.
 
 ## Future Improvements
 

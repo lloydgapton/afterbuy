@@ -10,7 +10,7 @@ export const mockPurchases: Purchase[] = [
     price: 485000,
     warrantyMonths: 12,
     returnWindowDays: 14,
-    status: "active",
+    status: "kept",
     accent: "sage",
   },
   {
@@ -22,7 +22,7 @@ export const mockPurchases: Purchase[] = [
     price: 1240000,
     warrantyMonths: 24,
     returnWindowDays: 7,
-    status: "active",
+    status: "kept",
     accent: "ink",
   },
   {
@@ -34,7 +34,7 @@ export const mockPurchases: Purchase[] = [
     price: 38500,
     warrantyMonths: 12,
     returnWindowDays: 14,
-    status: "active",
+    status: "kept",
     accent: "amber",
   },
   {
@@ -46,7 +46,7 @@ export const mockPurchases: Purchase[] = [
     price: 685000,
     warrantyMonths: 12,
     returnWindowDays: 14,
-    status: "active",
+    status: "kept",
     accent: "terracotta",
   },
   {
@@ -58,7 +58,7 @@ export const mockPurchases: Purchase[] = [
     price: 72000,
     warrantyMonths: 12,
     returnWindowDays: 30,
-    status: "active",
+    status: "kept",
     accent: "sage",
   },
   {

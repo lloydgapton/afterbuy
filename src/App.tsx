@@ -1,5 +1,8 @@
+import { useState } from "react"
 import { Plus, Package, RotateCcw, ShieldCheck, Undo2 } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { Toaster } from "@/components/ui/sonner"
 import { AppSidebar } from "@/components/layout/AppSidebar"
 import { DashboardHeader } from "@/components/layout/DashboardHeader"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
@@ -8,15 +11,53 @@ import { RecentPurchases } from "@/components/dashboard/RecentPurchases"
 import { StatCard } from "@/components/dashboard/StatCard"
 import { mockPurchases } from "@/data/mockPurchases"
 import { getPurchaseMetrics } from "@/lib/purchaseMetrics"
+import { PurchaseDialog } from "@/components/purchases/PurchaseDialog"
+import { PurchaseDetails } from "@/components/purchases/PurchaseDetails"
+import type { PurchaseFormValues } from "@/lib/purchaseSchema"
+import type { Purchase } from "@/types/purchase"
 
 function App() {
-  const metrics = getPurchaseMetrics(mockPurchases)
+  const [purchases, setPurchases] = useState<Purchase[]>(mockPurchases)
+  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false)
+  const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
+  const [detailsPurchase, setDetailsPurchase] = useState<Purchase | null>(null)
+  const metrics = getPurchaseMetrics(purchases)
+
+  function openCreateDialog() {
+    setEditingPurchase(null)
+    setPurchaseDialogOpen(true)
+  }
+
+  function openEditDialog(purchase: Purchase) {
+    setDetailsPurchase(null)
+    setEditingPurchase(purchase)
+    setPurchaseDialogOpen(true)
+  }
+
+  function handlePurchaseSubmit(values: PurchaseFormValues) {
+    if (editingPurchase) {
+      setPurchases((currentPurchases) => currentPurchases.map((purchase) => purchase.id === editingPurchase.id ? { ...purchase, ...values } : purchase))
+      toast.success("Purchase successfully updated")
+    } else {
+      setPurchases((currentPurchases) => [...currentPurchases, { ...values, id: crypto.randomUUID(), accent: "sage" }])
+      toast.success("Purchase successfully added")
+    }
+    setPurchaseDialogOpen(false)
+    setEditingPurchase(null)
+  }
+
+  function handleDeletePurchase(purchase: Purchase) {
+    setPurchases((currentPurchases) => currentPurchases.filter((item) => item.id !== purchase.id))
+    setDetailsPurchase(null)
+    toast.success("Purchase successfully deleted")
+  }
 
   return (
     <div className="min-h-screen bg-background">
+      <Toaster />
       <AppSidebar />
       <div className="lg:pl-[236px]">
-        <DashboardHeader />
+        <DashboardHeader onAddPurchase={openCreateDialog} />
         <main className="mx-auto max-w-[1480px] px-5 py-7 sm:px-8 lg:px-12 lg:py-10">
           <section className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end lg:mb-10">
             <div>
@@ -24,7 +65,7 @@ function App() {
               <h1 className="font-heading text-[30px] font-semibold tracking-[-0.05em] text-foreground sm:text-[36px]">Good morning<span className="text-overdue">.</span></h1>
               <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">Stay ahead of your purchases, returns and warranties — all in one place.</p>
             </div>
-            <Button className="w-fit rounded-xl bg-[#285D4B] px-4 text-xs text-white shadow-none hover:bg-[#193C32] sm:hidden"><Plus className="size-4" /> Add purchase</Button>
+            <Button onClick={openCreateDialog} className="w-fit rounded-xl bg-[#285D4B] px-4 text-xs text-white shadow-none hover:bg-[#193C32] sm:hidden"><Plus className="size-4" /> Add purchase</Button>
           </section>
 
           <section aria-label="Purchase summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -35,15 +76,25 @@ function App() {
           </section>
 
           <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.42fr)_minmax(300px,0.78fr)]">
-            <NeedsAttention purchases={mockPurchases} />
+            <NeedsAttention purchases={purchases} />
             <ActivityFeed />
           </section>
 
           <section className="mt-6">
-            <RecentPurchases purchases={mockPurchases} />
+            <RecentPurchases purchases={purchases} onView={setDetailsPurchase} onEdit={openEditDialog} onDelete={handleDeletePurchase} />
           </section>
         </main>
       </div>
+      <PurchaseDialog
+        open={purchaseDialogOpen}
+        purchase={editingPurchase}
+        onOpenChange={(open) => {
+          setPurchaseDialogOpen(open)
+          if (!open) setEditingPurchase(null)
+        }}
+        onSubmit={handlePurchaseSubmit}
+      />
+      <PurchaseDetails purchase={detailsPurchase} onOpenChange={(open) => { if (!open) setDetailsPurchase(null) }} onEdit={openEditDialog} />
     </div>
   )
 }

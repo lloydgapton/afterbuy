@@ -1,4 +1,6 @@
-export type PurchaseStatus = "active" | "returned"
+export const purchaseStatuses = ["considering", "kept", "returned", "claim_open"] as const
+
+export type PurchaseStatus = (typeof purchaseStatuses)[number]
 
 export type AttentionKind = "return" | "warranty"
 
