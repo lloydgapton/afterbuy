@@ -1,8 +1,10 @@
-import { compareDesc, format, parseISO } from "date-fns"
+import { compareAsc, compareDesc, format, parseISO } from "date-fns"
 import { useState } from "react"
-import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { Eye, ListFilter, MoreHorizontal, Pencil, Search, Trash2, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   AlertDialog,
@@ -21,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { Purchase } from "@/types/purchase"
+import type { Purchase, PurchaseStatus } from "@/types/purchase"
 
 const accentClasses = {
   sage: "bg-success/10 text-success",
@@ -37,24 +39,90 @@ interface RecentPurchasesProps {
   onDelete: (purchase: Purchase) => void
 }
 
+type StatusFilter = "all" | PurchaseStatus
+type SortOrder = "newest" | "oldest"
+
+const statusLabels: Record<PurchaseStatus, string> = {
+  considering: "Considering",
+  kept: "Kept",
+  returned: "Returned",
+  claim_open: "Warranty claim",
+}
+
 export function RecentPurchases({ purchases, onView, onEdit, onDelete }: RecentPurchasesProps) {
-  const recentPurchases = [...purchases]
-    .sort((first, second) => compareDesc(parseISO(first.purchaseDate), parseISO(second.purchaseDate)))
-    .slice(0, 4)
+  const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest")
+  const normalizedSearch = search.trim().toLowerCase()
+  const filteredPurchases = [...purchases]
+    .filter((purchase) => {
+      const matchesSearch = normalizedSearch.length === 0
+        || purchase.product.toLowerCase().includes(normalizedSearch)
+        || purchase.retailer.toLowerCase().includes(normalizedSearch)
+      const matchesStatus = statusFilter === "all" || purchase.status === statusFilter
+      return matchesSearch && matchesStatus
+    })
+    .sort((first, second) => sortOrder === "newest"
+      ? compareDesc(parseISO(first.purchaseDate), parseISO(second.purchaseDate))
+      : compareAsc(parseISO(first.purchaseDate), parseISO(second.purchaseDate)))
+  function clearFilters() {
+    setSearch("")
+    setStatusFilter("all")
+    setSortOrder("newest")
+  }
 
   return (
     <Card className="rounded-2xl bg-card shadow-none ring-1 ring-border">
       <CardHeader className="px-5 pb-2 sm:px-6">
         <div>
-          <CardTitle className="text-[16px] text-foreground">Recent purchases</CardTitle>
-          <p className="mt-1 text-xs text-muted-foreground">Your latest tracked items</p>
+          <CardTitle className="text-[16px] text-foreground">My purchases</CardTitle>
+          <p className="mt-1 text-xs text-muted-foreground">Search and manage your tracked items</p>
         </div>
       </CardHeader>
-      <CardContent className="px-0 pt-2">
-        {recentPurchases.length === 0 ? (
-          <div className="mx-5 rounded-xl border border-dashed border-border bg-background px-4 py-8 text-center sm:mx-6">
+      <CardContent className="space-y-4 px-5 pt-2 sm:px-6">
+        <div className="flex flex-col gap-3 lg:flex-row">
+          <div className="relative min-w-0 flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search product or retailer"
+              aria-label="Search purchases by product or retailer"
+              className="pl-9 pr-9"
+            />
+            {search && <Button type="button" variant="ghost" size="icon-xs" onClick={() => setSearch("")} className="absolute right-1 top-1/2 -translate-y-1/2" aria-label="Clear search"><X /></Button>}
+          </div>
+          <div className="grid grid-cols-2 gap-3 lg:w-[340px]">
+            <div className="relative">
+              <ListFilter className="pointer-events-none absolute left-3 top-1/2 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StatusFilter)}>
+                <SelectTrigger className="w-full pl-9" aria-label="Filter purchases by status"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All statuses</SelectItem>
+                  {(Object.keys(statusLabels) as PurchaseStatus[]).map((status) => <SelectItem key={status} value={status}>{statusLabels[status]}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as SortOrder)}>
+              <SelectTrigger className="w-full" aria-label="Sort purchases by purchase date"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest first</SelectItem>
+                <SelectItem value="oldest">Oldest first</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {purchases.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border bg-background px-4 py-8 text-center">
             <p className="text-sm font-semibold text-foreground">No purchases yet</p>
             <p className="mt-1 text-xs text-muted-foreground">Add a purchase to start tracking it here.</p>
+          </div>
+        ) : filteredPurchases.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border bg-background px-4 py-8 text-center">
+            <p className="text-sm font-semibold text-foreground">No purchases found</p>
+            <p className="mt-1 text-xs text-muted-foreground">Try a different search or status filter.</p>
+            <Button type="button" variant="outline" size="sm" onClick={clearFilters} className="mt-4">Clear filters</Button>
           </div>
         ) : <Table>
           <TableHeader>
@@ -67,7 +135,7 @@ export function RecentPurchases({ purchases, onView, onEdit, onDelete }: RecentP
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recentPurchases.map((purchase) => (
+            {filteredPurchases.map((purchase) => (
               <TableRow key={purchase.id} className="border-border hover:bg-background">
                 <TableCell className="max-w-[180px] pl-5 sm:pl-6">
                   <div className="flex items-center gap-2.5">

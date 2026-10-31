@@ -140,6 +140,11 @@ The initial development milestone includes:
 - Purchase form validation for required fields, positive values, valid statuses and non-future purchase dates.
 - Browser localStorage persistence for purchases and activity history using versioned storage keys.
 - Activity records for purchase creation, updates, status transitions and deletion.
+- Purchase search by product name or retailer with case-insensitive matching.
+- Purchase status filtering using the existing purchase statuses.
+- Newest-first and oldest-first purchase-date sorting.
+- Combined search and status filtering with clear filters support.
+- Empty states for an empty purchase collection and searches with no matching purchases.
 
 Persistent storage is local to the current browser and device. Backend synchronisation, reminder delivery and cross-device access are still pending.
 
