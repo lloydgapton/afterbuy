@@ -1,4 +1,3 @@
-import { addDays, addMonths } from "date-fns"
 import type { ActivityItem, Purchase } from "@/types/purchase"
 
 export const mockPurchases: Purchase[] = [
@@ -43,7 +42,7 @@ export const mockPurchases: Purchase[] = [
     product: "Sony WH-1000XM5",
     category: "Audio",
     retailer: "Game Stores",
-    purchaseDate: "2026-07-22",
+    purchaseDate: "2025-11-25",
     price: 685000,
     warrantyMonths: 12,
     returnWindowDays: 14,
@@ -62,43 +61,47 @@ export const mockPurchases: Purchase[] = [
     status: "active",
     accent: "sage",
   },
+  {
+    id: "anker-charger",
+    product: "Anker 735 Charger",
+    category: "Accessories",
+    retailer: "Amazon",
+    purchaseDate: "2026-03-08",
+    price: 95000,
+    warrantyMonths: 18,
+    returnWindowDays: 30,
+    status: "returned",
+    accent: "ink",
+  },
 ]
 
 export const mockActivity: ActivityItem[] = [
   {
     id: "activity-1",
     title: "Purchase added",
-    description: "Samsung Galaxy A55 · Slot Nigeria",
+    description: "Samsung Galaxy A55 - Slot Nigeria",
     date: "2026-10-18",
     kind: "purchase",
   },
   {
     id: "activity-2",
-    title: "Return window closes soon",
-    description: "HP EliteBook 840 G10 · 3 days left",
-    date: "2026-10-30",
+    title: "Return window tracked",
+    description: "HP EliteBook 840 G10 - return window ends 3 Oct 2026",
+    date: "2026-09-26",
     kind: "return",
   },
   {
     id: "activity-3",
-    title: "Warranty reminder set",
-    description: "Sony WH-1000XM5 · expires 22 Jul 2027",
-    date: "2026-07-22",
+    title: "Warranty tracked",
+    description: "Sony WH-1000XM5 - warranty ends 25 Nov 2026",
+    date: "2025-11-25",
     kind: "warranty",
   },
   {
     id: "activity-4",
-    title: "Purchase added",
-    description: "Oraimo Power Bank · Jumia",
-    date: "2026-09-09",
-    kind: "purchase",
+    title: "Purchase returned",
+    description: "Anker 735 Charger - Amazon",
+    date: "2026-04-02",
+    kind: "return",
   },
 ]
-
-export function getReturnDeadline(purchase: Purchase): Date {
-  return addDays(new Date(purchase.purchaseDate), purchase.returnWindowDays)
-}
-
-export function getWarrantyExpiry(purchase: Purchase): Date {
-  return addMonths(new Date(purchase.purchaseDate), purchase.warrantyMonths)
-}

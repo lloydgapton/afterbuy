@@ -6,7 +6,7 @@ AfterBuy is a purchase tracking application designed to help users organise thei
 
 The project is being developed as a responsive, user-friendly frontend application using React and TypeScript.
 
-> **Project status:** In development. The initial dashboard interface and project foundation are established. Purchase management, dynamic deadline tracking, activity management and data persistence are being implemented progressively.
+> **Project status:** In development. The initial dashboard interface is established, including dynamic purchase statistics and automatic return-window and warranty deadline calculations. Purchase management, activity management and data persistence are being implemented progressively.
 
 ## The Problem
 
@@ -133,8 +133,10 @@ The initial development milestone includes:
 - AfterBuy global design theme.
 - Initial dashboard component structure.
 - Sample purchase and activity records.
+- Dynamic dashboard statistics derived from purchase records.
+- Automatic return-window and warranty deadline calculations using local calendar dates.
 
-The purchase-management workflows and persistent storage are still under development.
+The purchase-management workflows, reminder delivery and persistent storage are still under development.
 
 ## Future Improvements
 

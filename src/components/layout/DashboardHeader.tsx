@@ -1,6 +1,9 @@
 import { Bell, Plus } from "lucide-react"
+import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { MobileSidebar } from "@/components/layout/AppSidebar"
+
+const currentDateLabel = format(new Date(), "EEEE, d MMMM yyyy")
 
 export function DashboardHeader() {
   return (
@@ -8,7 +11,7 @@ export function DashboardHeader() {
       <div className="flex items-center gap-3">
         <MobileSidebar />
         <div>
-          <p className="hidden text-xs font-medium text-[#84918A] sm:block">Thursday, 30 October 2026</p>
+          <p className="hidden text-xs font-medium text-[#84918A] sm:block">{currentDateLabel}</p>
           <p className="text-sm font-semibold text-[#193C32] sm:hidden">Overview</p>
         </div>
       </div>
