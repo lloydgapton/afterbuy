@@ -1,32 +1,158 @@
-# React + TypeScript + Vite
+# AfterBuy
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+**Never miss a return window or warranty deadline again.**
 
-Currently, two official plugins are available:
+AfterBuy is a purchase tracking application designed to help users organise their purchases, monitor product return periods, and keep track of warranty expiration dates in one place.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The project is being developed as a responsive, user-friendly frontend application using React and TypeScript.
 
-## React Compiler
+> **Project status:** In development. The initial dashboard interface and project foundation are established. Purchase management, dynamic deadline tracking, activity management and data persistence are being implemented progressively.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## The Problem
 
-## Expanding the Oxlint configuration
+People frequently forget when they purchased products, how long they have to return them, and when their warranties expire.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+Important purchase information often ends up scattered across emails, receipts and personal notes.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+AfterBuy aims to solve this by providing a centralised place to record purchases and monitor important deadlines.
+
+## Planned Features
+
+- **Purchase Management:** Add, edit, view and delete purchase records.
+- **Return Window Tracking:** Automatically calculate product return deadlines.
+- **Warranty Tracking:** Calculate warranty expiration dates and identify approaching expirations.
+- **Purchase Status Management:** Track the status of individual purchases.
+- **Activity History:** Keep a record of purchase-related updates.
+- **Dashboard Overview:** Display purchase statistics and important reminders.
+- **Local Data Persistence:** Preserve purchase information between browser sessions.
+- **Responsive Interface:** Provide a consistent experience across desktop, tablet and mobile devices.
+
+## Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| React | User interface development |
+| TypeScript | Static typing and data modelling |
+| Vite | Development server and build tooling |
+| Tailwind CSS v4 | Styling and responsive layouts |
+| shadcn/ui | Reusable interface components |
+| Radix UI | Accessible interface primitives |
+| Lucide React | Icon library |
+| date-fns | Date calculations and formatting |
+| React Hook Form | Form state management |
+| Zod | Data validation |
+| Sonner | User notifications |
+
+## Design Direction
+
+AfterBuy uses a warm, minimal visual identity built around:
+
+- Evergreen and forest-green brand colours.
+- Warm ivory application backgrounds.
+- Soft sage surfaces.
+- Amber deadline indicators.
+- Terracotta overdue indicators.
+- Figtree Variable typography.
+
+The interface prioritises readability, clear visual hierarchy and consistent interactions.
+
+## Project Structure
+
+```text
+src/
+├── assets/
+├── components/
+│   ├── dashboard/
+│   ├── layout/
+│   └── ui/
+├── data/
+├── lib/
+├── types/
+├── App.tsx
+├── index.css
+└── main.tsx
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Getting Started
+
+### Prerequisites
+
+- Node.js compatible with the installed Vite version.
+- npm.
+- Git.
+
+### Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/lloydgapton/afterbuy.git
+```
+
+Navigate into the project:
+
+```bash
+cd afterbuy
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+### Production Build
+
+To check TypeScript compilation and generate an optimised production build:
+
+```bash
+npm run build
+```
+
+### Linting
+
+Run:
+
+```bash
+npm run lint
+```
+
+## Current Implementation Status
+
+The initial development milestone includes:
+
+- React and TypeScript project configuration.
+- Tailwind CSS v4 integration.
+- shadcn/ui component library.
+- AfterBuy global design theme.
+- Initial dashboard component structure.
+- Sample purchase and activity records.
+
+The purchase-management workflows and persistent storage are still under development.
+
+## Future Improvements
+
+Potential future enhancements include:
+
+- User authentication.
+- Cloud-based purchase synchronisation.
+- Receipt attachment management.
+- Purchase reminders and notifications.
+- Exporting purchase records.
+- Detailed purchase analytics.
+
+These improvements are outside the scope of the initial frontend version.
+
+## Repository
+
+[View AfterBuy on GitHub](https://github.com/lloydgapton/afterbuy)
+
+---
+
+**AfterBuy — Keep track of what you buy, and never miss what matters.**
