@@ -94,7 +94,7 @@ function App() {
       <AppSidebar />
       <div className="lg:pl-[236px]">
         <DashboardHeader onAddPurchase={openCreateDialog} />
-        <main id="overview" className="mx-auto max-w-[1480px] scroll-mt-8 px-5 py-7 sm:px-8 lg:px-12 lg:py-10">
+        <main id="overview" tabIndex={-1} className="mx-auto max-w-[1480px] scroll-mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-4 px-5 py-7 sm:px-8 lg:px-12 lg:py-10">
           <section className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end lg:mb-10">
             <div>
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-warning-foreground">Your purchase companion</p>
@@ -111,12 +111,12 @@ function App() {
             <StatCard label="Returned items" value={String(metrics.returnedPurchases)} detail="Successfully returned" icon={Undo2} tone="terracotta" />
           </section>
 
-          <section id="deadlines" className="mt-6 grid scroll-mt-8 gap-6 xl:grid-cols-[minmax(0,1.42fr)_minmax(300px,0.78fr)]">
+          <section id="deadlines" tabIndex={-1} className="mt-6 grid scroll-mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-4 gap-6 xl:grid-cols-[minmax(0,1.42fr)_minmax(300px,0.78fr)]">
             <NeedsAttention purchases={purchases} />
-            <div id="activity" className="scroll-mt-8"><ActivityFeed activities={activities} /></div>
+            <div id="activity" tabIndex={-1} className="scroll-mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-4"><ActivityFeed activities={activities} /></div>
           </section>
 
-          <section id="purchases" className="mt-6 scroll-mt-8">
+          <section id="purchases" tabIndex={-1} className="mt-6 scroll-mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-4">
             <RecentPurchases purchases={purchases} onView={setDetailsPurchase} onEdit={openEditDialog} onDelete={handleDeletePurchase} />
           </section>
         </main>

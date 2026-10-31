@@ -1,15 +1,18 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
+import type { MouseEvent } from "react"
 import {
   Activity,
   BarChart3,
   CalendarClock,
   LayoutDashboard,
+  Menu,
   Package,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
@@ -35,7 +38,9 @@ function Brand() {
   )
 }
 
-function Navigation({ onNavigate }: { onNavigate?: () => void }) {
+type NavigationHandler = (href: string, event: MouseEvent<HTMLAnchorElement>) => void
+
+function Navigation({ onNavigate }: { onNavigate?: NavigationHandler }) {
   const [active, setActive] = useState("Overview")
 
   return (
@@ -47,9 +52,10 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
         <a
           key={label}
           href={href}
-          onClick={() => {
+          aria-current={active === label ? "location" : undefined}
+          onClick={(event) => {
             setActive(label)
-            onNavigate?.()
+            onNavigate?.(href, event)
           }}
           className={cn(
             "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E9B35B] focus-visible:ring-offset-2 focus-visible:ring-offset-[#193C32]",
@@ -66,7 +72,7 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarContent({ onNavigate }: { onNavigate?: NavigationHandler }) {
   return (
     <div className="flex h-full flex-col px-5 py-6">
       <Brand />
@@ -90,17 +96,46 @@ export function AppSidebar() {
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false)
+  const pendingNavigationRef = useRef<string | null>(null)
+
+  function handleMobileNavigate(href: string, event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault()
+    pendingNavigationRef.current = href
+    setOpen(false)
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="text-[#193C32] lg:hidden" aria-label="Open navigation">
-          <LayoutDashboard className="size-5" />
+          <Menu className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[270px] border-none bg-[#193C32] p-0 text-white">
+      <SheetContent
+        side="left"
+        className="w-[270px] border-none bg-[#193C32] p-0 text-white"
+        onCloseAutoFocus={(event) => {
+          const pendingHref = pendingNavigationRef.current
+          if (!pendingHref) return
+
+          event.preventDefault()
+          requestAnimationFrame(() => {
+            const target = document.getElementById(pendingHref.slice(1))
+            pendingNavigationRef.current = null
+            if (!target) return
+
+            window.history.pushState(null, "", pendingHref)
+            target.focus({ preventScroll: true })
+            target.scrollIntoView({
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+              block: "start",
+            })
+          })
+        }}
+      >
         <SheetTitle className="sr-only">Navigation</SheetTitle>
-        <SidebarContent onNavigate={() => setOpen(false)} />
+        <SheetDescription className="sr-only">Navigate to sections of your AfterBuy dashboard.</SheetDescription>
+        <SidebarContent onNavigate={handleMobileNavigate} />
       </SheetContent>
     </Sheet>
   )
