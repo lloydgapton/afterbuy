@@ -36,7 +36,6 @@ export function NeedsAttention({ purchases }: { purchases: Purchase[] }) {
           <CardTitle className="text-[16px] text-foreground">Needs your attention</CardTitle>
           <p className="mt-1 text-xs text-muted-foreground">A few things worth checking today</p>
         </div>
-        <button type="button" className="text-xs font-medium text-primary hover:underline">View all</button>
       </CardHeader>
       <CardContent className="space-y-2 px-5 pt-4 sm:px-6">
         {items.length === 0 ? (
