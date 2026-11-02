@@ -1,5 +1,4 @@
 import { useRef, useState } from "react"
-import type { MouseEvent } from "react"
 import {
   BarChart3,
   CalendarClock,
@@ -36,7 +35,18 @@ function Brand() {
   )
 }
 
-type NavigationHandler = (href: string, event: MouseEvent<HTMLAnchorElement>) => void
+type NavigationHandler = (href: string) => void
+
+function scrollToSection(href: string) {
+  const target = document.getElementById(href.replace(/^#/, ""))
+  if (!target) return
+
+  target.focus({ preventScroll: true })
+  target.scrollIntoView({
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    block: "start",
+  })
+}
 
 function Navigation({ onNavigate }: { onNavigate?: NavigationHandler }) {
   const [active, setActive] = useState("Overview")
@@ -53,7 +63,12 @@ function Navigation({ onNavigate }: { onNavigate?: NavigationHandler }) {
           aria-current={active === label ? "location" : undefined}
           onClick={(event) => {
             setActive(label)
-            onNavigate?.(href, event)
+            event.preventDefault()
+            if (onNavigate) {
+              onNavigate(href)
+            } else {
+              scrollToSection(href)
+            }
           }}
           className={cn(
             "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E9B35B] focus-visible:ring-offset-2 focus-visible:ring-offset-[#193C32]",
@@ -96,8 +111,7 @@ export function MobileSidebar() {
   const [open, setOpen] = useState(false)
   const pendingNavigationRef = useRef<string | null>(null)
 
-  function handleMobileNavigate(href: string, event: MouseEvent<HTMLAnchorElement>) {
-    event.preventDefault()
+  function handleMobileNavigate(href: string) {
     pendingNavigationRef.current = href
     setOpen(false)
   }
@@ -118,16 +132,8 @@ export function MobileSidebar() {
 
           event.preventDefault()
           requestAnimationFrame(() => {
-            const target = document.getElementById(pendingHref.slice(1))
             pendingNavigationRef.current = null
-            if (!target) return
-
-            window.history.pushState(null, "", pendingHref)
-            target.focus({ preventScroll: true })
-            target.scrollIntoView({
-              behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-              block: "start",
-            })
+            scrollToSection(pendingHref)
           })
         }}
       >
